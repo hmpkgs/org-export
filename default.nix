@@ -22,7 +22,7 @@ let
 
 in {
 
-  options.programs.emacs.orgExport = {
+  options.programs.orgExport = {
     enable = mkEnableOption "Orgfile Github-Pages Export";
     source = mkOption {
       type = types.path;
