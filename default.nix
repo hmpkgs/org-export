@@ -9,9 +9,8 @@ rec {
     pkgGen = pkgs.emacsPackagesNgGen pkgs.emacs;
     # install htmlize for emacs
     emacs = pkgGen.emacsWithPackages (epkgs: [ epkgs.htmlize ]);
-    # calculate some values
-    creds = "${user}:${token}";
-    giturl = "https://${creds}@github.com/${user}/${repo}.git";
+    # calculate the url of the repository
+    giturl = "https://${user}:${token}@github.com/${user}/${repo}.git";
     # export Orgmode file to HTML and upload to Github Pages
     env = { buildInputs = [ emacs pkgs.git ]; };
       script = ''
