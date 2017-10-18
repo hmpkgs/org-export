@@ -4,11 +4,14 @@ with lib;
 with builtins;
 
 rec {
-  export = { source, giturl }: let
+  export = { source, user, repo, token }: let
     # use the main emacs package
     pkgGen = pkgs.emacsPackagesNgGen pkgs.emacs;
     # install htmlize for emacs
     emacs = pkgGen.emacsWithPackages (epkgs: [ epkgs.htmlize ]);
+    # calculate some values
+    creds = "${user}:${token}";
+    giturl = "https://${creds}@github.com/${user}/${repo}.git";
     # export Orgmode file to HTML and upload to Github Pages
     env = { buildInputs = [ emacs pkgs.git ]; };
       script = ''
