@@ -4,8 +4,8 @@ with lib;
 
 let
   cfg = config.programs.orgExport;
-  emacs = (pkgsemacsPackagesNgGen emacs).emacsWithPackages (epkgs: [ epkgs.htmlize ]);
-  env = { buildInputs = [ pkgs.git pkgs.emacs ]; };
+  emacs = (pkgsemacsPackagesNgGen pkgs.emacs).emacsWithPackages (epkgs: [ epkgs.htmlize ]);
+  env = { buildInputs = [ pkgs.git emacs ]; };
   script = ''
     ln -s "${cfg.source}" ./init.org;
     emacs -Q --script ${./org-export.el} -f export-init-to-html;
