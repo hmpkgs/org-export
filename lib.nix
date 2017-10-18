@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 let
-  emacs = (pkgsemacsPackagesNgGen pkgs.emacs).emacsWithPackages (epkgs: [ epkgs.htmlize ]);
+  emacs = (pkgs.emacsPackagesNgGen pkgs.emacs).emacsWithPackages (epkgs: [ epkgs.htmlize ]);
 
 {
   orgExport = { infile, giturl }:
