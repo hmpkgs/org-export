@@ -4,7 +4,7 @@ with lib;
 
 let
   cfg = config.programs.orgExport;
-  emacs = (pkgsemacsPackagesNgGen pkgs.emacs).emacsWithPackages (epkgs: [ epkgs.htmlize ]);
+  emacs = (pkg.semacsPackagesNgGen pkgs.emacs).emacsWithPackages (epkgs: [ epkgs.htmlize ]);
   env = { buildInputs = [ pkgs.git emacs ]; };
   script = ''
     ln -s "${cfg.source}" ./init.org;
