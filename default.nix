@@ -1,44 +1,27 @@
 { config, pkgs, lib, ... }:
 
 with lib;
+with builtins;
 
-let
-  cfg = config.programs.orgExport;
-  emacs = (pkgs.semacsPackagesNgGen pkgs.emacs).emacsWithPackages (epkgs: [ epkgs.htmlize ]);
-  env = { buildInputs = [ pkgs.git emacs ]; };
-  script = ''
-    ln -s "${cfg.source}" ./init.org;
-    emacs -Q --script ${./org-export.el} -f export-init-to-html;
-    mv init.html index.html
-    git init;
-    git checkout -b gh-pages
-    git remote add origin "${cfg.giturl}"
-    git add index.html;
-    git commit -m "autodeploy";
-    git push --force origin gh-pages;
-    cp ./index.html $out;
-  '';
-  result = pkgs.runCommand "exportOrg" env script;
-
-in {
-
-  options.programs.orgExport = {
-    enable = mkEnableOption "Orgfile Github-Pages Export";
-    source = mkOption {
-      type = types.path;
-      description = ''
-        The source orgfile to export to Github-Pages.
+rec {
+  export = { source, giturl }: let
+    # use the main emacs package
+    pkgGen = pkgs.emacsPackagesNgGen pkgs.emacs;
+    # install htmlize for emacs
+    emacs = pkgGen.emacsWithPackages (epkgs: [ epkgs.htmlize ]);
+    # export Orgmode file to HTML and upload to Github Pages
+    env = { buildInputs = [ emacs pkgs.git ]; };
+      script = ''
+        ln -s "${source}" ./init.org;
+        emacs -Q --script ${./org-export.el} -f export-init-to-html;
+        mv init.html index.html
+        git init;
+        git checkout -b gh-pages
+        git remote add origin "${giturl}"
+        git add index.html;
+        git commit -m "autodeploy";
+        git push --force origin gh-pages;
+        cp ./index.html $out;
       '';
-    };
-    giturl = mkOption {
-      type = types.str;
-      description = ''
-        The Git URL of the Github-Pages repository.
-      '';
-    };
-  };
-
-  config = mkIf cfg.enable {
-    home.file.".emacs.d/init.html".source = result;
-  };
+  in pkgs.runCommand "org-export" env script;
 }
