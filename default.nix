@@ -3,7 +3,7 @@
 with lib;
 
 let
-  cfg = config.programs.emacs.orgExport;
+  cfg = config.programs.orgExport;
   emacs = (pkgsemacsPackagesNgGen emacs).emacsWithPackages (epkgs: [ epkgs.htmlize ]);
   env = { buildInputs = [ pkgs.git pkgs.emacs ]; };
   script = ''
