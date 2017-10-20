@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ pkgs, lib, ... }:
 
 with lib;
 with builtins;
@@ -26,4 +26,5 @@ rec {
         cp ./index.html $out;
       '';
   in pkgs.runCommand "org-export" env script;
+  module = { };
 }
