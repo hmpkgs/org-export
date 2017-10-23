@@ -1,18 +1,18 @@
-{ pkgs, lib }:
+{ config, pkgs, lib, ... }:
 
-with lib;
-with builtins;
+{
+  config.nixpkgs.overlays = [(self: super: {
 
-rec {
-  export = { source, user, repo, token }: let
-    # use the main emacs package
-    pkgGen = pkgs.emacsPackagesNgGen pkgs.emacs;
-    # install htmlize for emacs
-    emacs = pkgGen.emacsWithPackages (epkgs: [ epkgs.htmlize ]);
-    # calculate the url of the repository
-    giturl = "https://${user}:${token}@github.com/${user}/${repo}.git";
-    # export Orgmode file to HTML and upload to Github Pages
-    env = { buildInputs = [ emacs pkgs.git ]; };
+    org-export = { source, user, repo }: let
+      pkgGen = pkgs.emacsPackagesNgGen pkgs.emacs;
+      # install htmlize for emacs
+      emacs = pkgGen.emacsWithPackages (epkgs: [ epkgs.htmlize ]);
+      # get the auth token from the environment
+      token = builtins.getEnv "GITHUB_PUBLIC_REPO_TOKEN";
+      # calculate the url of the repository
+      giturl = "https://${user}:${token}@github.com/${user}/${repo}.git";
+      # export Orgmode file to HTML and upload to Github Pages
+      env = { buildInputs = [ emacs pkgs.git ]; };
       script = ''
         ln -s "${source}" ./init.org;
         emacs -Q --script ${./org-export.el} -f export-init-to-html;
@@ -25,6 +25,8 @@ rec {
         git push --force origin gh-pages;
         cp ./index.html $out;
       '';
-  in pkgs.runCommand "org-export" env script;
-  module = { };
+    in pkgs.runCommand "org-export" env script;
+
+  })];
 }
+
