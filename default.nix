@@ -3,12 +3,10 @@
 {
   config.nixpkgs.overlays = [(self: super: {
 
-    org-export = { source, user, repo }: let
+    org-export = { source, user, repo, token }: let
       pkgGen = pkgs.emacsPackagesNgGen pkgs.emacs;
       # install htmlize for emacs
       emacs = pkgGen.emacsWithPackages (epkgs: [ epkgs.htmlize ]);
-      # get the auth token from the environment
-      token = builtins.getEnv "GITHUB_PUBLIC_REPO_TOKEN";
       # calculate the url of the repository
       giturl = "https://${user}:${token}@github.com/${user}/${repo}.git";
       # export Orgmode file to HTML and upload to Github Pages
