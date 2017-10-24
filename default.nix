@@ -1,9 +1,11 @@
 { config, pkgs, lib, ... }:
 
-{
+let defaultToken = builtins.getEnv "GITHUB_PUBLIC_REPO_TOKEN";
+
+in {
   config.nixpkgs.overlays = [(self: super: {
 
-    org-export = { source, user, repo, token }: let
+    org-export = { source, user, repo, token ? defaultToken }: let
       pkgGen = pkgs.emacsPackagesNgGen pkgs.emacs;
       # install htmlize for emacs
       emacs = pkgGen.emacsWithPackages (epkgs: [ epkgs.htmlize ]);
